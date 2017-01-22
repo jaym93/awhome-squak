@@ -1,0 +1,68 @@
+# File: mongodb_structure.txt
+# Author: Jayanth M (jayanth6@gatech.edu)
+# Created: 24-12-2016 12:48 PM
+# Project: squak
+
+MongoDB database structure
+
+// Devices doc
+{
+_id: ObjectId(""),
+device: DEVICE_NAME,
+device_id: DEVICE_ID,  //Can be MAC address, Serial Number, so on
+date_added: TIMESTAMP,
+device_location: ( FIRST FLOOR KITCHEN | BASEMENT | SECOND FLOOR NURSERY | ... ),  // Device uses starts_with for aggregation, always add larger entity first
+device_type: (SENSOR|ACTUATOR|COMBINED), // examples: Motion sensors are SENSORS, lights are ACTUATORS, Thermostats are COMBINED devices
+value_type: ( INTERVAL | STREAMING | TRIGGERED ),
+value_postfix: ( '°C' | '°F' | '%' | '' | ... ),
+device_desc: DESCRIPTION // Any additional notes, authentication, etc.
+}
+
+//SENSOR
+{
+_id: ObjectId("")
+device_id: DEVICE_ID,
+timestamp: TIMESTAMP, //timestamp of last reading
+raw_value: RAW_VALUE, //Collected from raw sensor data - could be something like '236', can be null if it is not obtained
+value: VALUE, //Processed value, like temperature - '23°C', '45°F', '72%'. In case of streaming devices, include URL to video stream.
+triggered_by: ( DEVICE_ID | USER_ID | BOT_ID ) //DEVICE_ID is itself if the samples run self-timed by device
+}
+
+//ACTUATOR
+{
+_id: Objectid(""),
+device_id: DEVICE_ID,
+timestamp: TIMESTAMP, //timestamp of last reading
+triggered_by: (( DEVICE_ID | USER_ID | BOT_ID ),
+value_written: VALUE
+}
+
+//COMBINED
+{
+_id: ObjectId("")
+device_id: DEVICE_ID,
+timestamp: TIMESTAMP, //timestamp of last reading
+raw_value: RAW_VALUE, //Collected from raw sensor data - could be something like '236', can be null if it is not obtained
+value: VALUE, //Processed value, like temperature - '23°C', '45°F', '72%'. In case of streaming devices, include URL to video stream.
+triggered_by: ( DEVICE_ID | USER_ID | BOT_ID ), //DEVICE_ID is itself if the samples run self-timed by device
+value_written: VALUE
+}
+
+//USERS
+{
+_id: ObjectId(""),
+user_name: USER_NAME,
+user_id: EMAIL_ADDRESS,
+user_type: ( ADMIN | STUDENT | GUEST | PARTNER ),
+added_on: TIMESTAMP,
+notes: OTHER_DETAILS // Phone number, emergency contact, role, etc.,
+}
+
+//BOTS
+{
+_id: ObjectId(""),
+name: BOT_FRIENDLY_NAME,
+type: ( SLACK_BOT | ECHO_BOT | ... ),
+bot_id: ( SLACK_BOT_ID | ECHO_DEV_ID | ... ),
+added_on: TIMESTAMP
+}
